@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forestdale Calculator Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f3f4f6;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .header {
+      background-color: #000000;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .logo-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: white;
+    }
+
+    .logo-top {
+      font-size: 18px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .logo-divider {
+      width: 100%;
+      height: 2px;
+      background-color: #dc2626;
+      margin: 2px 0;
+    }
+
+    .logo-bottom {
+      font-size: 10px;
+      letter-spacing: 2px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: bold;
+      color: #dc2626;
+    }
+
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      padding: 20px;
+      background-color: #f9fafb;
+    }
+
+    .summary-card {
+      background-color: #e5e7eb;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      transition: background-color 0.3s ease;
+    }
+
+    .summary-card.green { background-color: #86efac; }
+    .summary-card.red { background-color: #fca5a5; }
+
+    .summary-card .label {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .summary-card .value {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 4px 1fr;
+    }
+
+    .divider { background-color: #dc2626; }
+
+    .section { padding: 30px; }
+    .section-right { background-color: #f9fafb; }
+
+    h2 {
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .totals-single { margin-bottom: 25px; }
+
+    .totals-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .totals-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .total-card {
+      background-color: #e5e7eb;
+      padding: 15px;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .total-card.large { padding: 20px; }
+
+    .total-card .label {
+      font-size: 11px;
+      color: #dc2626;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .total-card .value {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .total-card.large .value { font-size: 32px; }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .input-group { margin-bottom: 15px; }
+
+    .input-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      border-bottom: 1px solid #dc2626;
+      padding-bottom: 3px;
+    }
+
+    .input-group input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .input-group input[type="number"]:focus {
+      outline: none;
+      border-color: #dc2626;
+    }
+
+    .input-group input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: #d1d5db;
+      outline: none;
+      margin-top: 8px;
+    }
+
+    .input-group input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #dc2626;
+      cursor: pointer;
+    }
+
+    .input-group input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #dc2626;
+      cursor: pointer;
+      border: none;
+    }
+
+    .notes {
+      margin-top: 30px;
+      font-size: 12px;
+      color: #6b7280;
+      font-style: italic;
+    }
+
+    .notes p { margin-bottom: 8px; }
+
+    .footer {
+      background-color: #e5e7eb;
+      padding: 12px;
+      text-align: center;
+      font-size: 13px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-left">
+        <div class="logo-box">
+          <div class="logo-top">FORESTDALE</div>
+          <div class="logo-divider"></div>
+          <div class="logo-bottom">METAL PRODUCTS INC</div>
+        </div>
+        <h1>CALCULATOR DASHBOARD</h1>
+      </div>
+    </div>
+
+    <div class="summary-cards">
+      <div class="summary-card" id="cardSavings">
+        <div class="label">Savings (CAD)</div>
+        <div class="value" id="savings">$0.00</div>
+      </div>
+      <div class="summary-card" id="cardPercent">
+        <div class="label">% Cheaper with Onshore</div>
+        <div class="value" id="percentCheaper">(Blank)</div>
+      </div>
+      <div class="summary-card" id="cardWinner">
+        <div class="label">Winner Label</div>
+        <div class="value" id="winner">Costs are the same</div>
+      </div>
+      <div class="summary-card" id="cardLead">
+        <div class="label">Lead-time Advantage</div>
+        <div class="value" id="leadAdvantage">Same lead time</div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="section">
+        <h2>Overseas/Offshore Supplier</h2>
+
+        <div class="totals-single">
+          <div class="total-card large">
+            <div class="label">Offshore Total (CAD)</div>
+            <div class="value" id="offshoreTotal">$0.00</div>
+          </div>
+        </div>
+
+        <div class="totals-grid">
+          <div class="total-card">
+            <div class="label">Product Cost (CAD) - Offshore</div>
+            <div class="value" id="productCostCAD">$0.00</div>
+          </div>
+          <div class="total-card">
+            <div class="label">Storage &amp; Handling (CAD)</div>
+            <div class="value" id="storageHandling">$0.00</div>
+          </div>
+          <div class="total-card">
+            <div class="label">Interest (CAD)</div>
+            <div class="value" id="interest">0.00</div>
+          </div>
+        </div>
+
+        <div class="totals-grid">
+          <div class="total-card">
+            <div class="label">Exchange Rate (USD→CAD)</div>
+            <div class="value" id="exchangeRateDisplay">0.00</div>
+          </div>
+          <div class="total-card">
+            <div class="label">Freight Cost (CAD)</div>
+            <div class="value" id="freightCAD">$0.00</div>
+          </div>
+          <div class="total-card"></div>
+        </div>
+
+        <div class="input-grid">
+          <div class="input-group">
+            <label>Product Cost USD</label>
+            <input type="number" id="productCostUSD" value="36000" step="0.01" />
+            <input type="range" id="productCostUSD-slider" min="0" max="100000" step="100" value="36000" />
+          </div>
+          <div class="input-group">
+            <label>Freight Cost (USD)</label>
+            <input type="number" id="freightCostUSD" value="9000" step="0.01" />
+            <input type="range" id="freightCostUSD-slider" min="0" max="50000" step="100" value="9000" />
+          </div>
+        </div>
+
+        <div class="input-grid">
+          <div class="input-group">
+            <label>No. of Shipments/Year</label>
+            <input type="number" id="shipments" value="2" step="1" />
+            <input type="range" id="shipments-slider" min="0" max="50" step="1" value="2" />
+          </div>
+          <div class="input-group">
+            <label>Exchange Rate (USD→CAD)</label>
+            <input type="number" id="exchangeRate" value="1.38" step="0.01" />
+            <input type="range" id="exchangeRate-slider" min="0" max="2" step="0.01" value="1.38" />
+          </div>
+        </div>
+
+        <div class="input-grid">
+          <div class="input-group">
+            <label>Investment Rate (%)</label>
+            <input type="number" id="investmentRate" value="20" step="0.01" />
+            <input type="range" id="investmentRate-slider" min="0" max="50" step="0.1" value="20" />
+          </div>
+          <div class="input-group">
+            <label>Borrow Rate (%)</label>
+            <input type="number" id="borrowRate" value="13" step="0.01" />
+            <input type="range" id="borrowRate-slider" min="0" max="50" step="0.1" value="13" />
+          </div>
+        </div>
+
+        <div class="input-grid">
+          <div class="input-group">
+            <label>Lead Time Weeks</label>
+            <input type="number" id="leadTimeWeeks" value="5" step="1" />
+            <input type="range" id="leadTimeWeeks-slider" min="0" max="52" step="1" value="5" />
+          </div>
+          <div class="input-group">
+            <!-- WORDING CHANGE ONLY -->
+            <label>Hours/Week</label>
+            <input type="number" id="hoursPerWeek" value="3" step="0.5" />
+            <input type="range" id="hoursPerWeek-slider" min="0" max="168" step="0.5" value="3" />
+          </div>
+        </div>
+
+        <div class="input-grid">
+          <div class="input-group">
+            <label>Warehouse Rent Weekly (CAD)</label>
+            <input type="number" id="warehouseRent" value="500" step="0.01" />
+            <input type="range" id="warehouseRent-slider" min="0" max="5000" step="10" value="500" />
+          </div>
+          <div class="input-group">
+            <label>Wages/Hour (CAD)</label>
+            <input type="number" id="wagesPerHour" value="17" step="0.01" />
+            <input type="range" id="wagesPerHour-slider" min="0" max="100" step="0.5" value="17" />
+          </div>
+        </div>
+
+        <div class="input-grid">
+          <div class="input-group">
+            <!-- WORDING CHANGE ONLY -->
+            <label>Events/Year</label>
+            <input type="number" id="eventsPerYear" value="5" step="1" />
+            <input type="range" id="eventsPerYear-slider" min="0" max="50" step="1" value="5" />
+          </div>
+          <div class="input-group">
+            <label>Repackaging (CAD)</label>
+            <input type="number" id="repackaging" value="500" step="0.01" />
+            <input type="range" id="repackaging-slider" min="0" max="5000" step="10" value="500" />
+          </div>
+        </div>
+
+        <div class="input-grid">
+          <div class="input-group">
+            <label>Handling Rate (CAD)</label>
+            <input type="number" id="handlingRate" value="300" step="0.01" />
+            <input type="range" id="handlingRate-slider" min="0" max="5000" step="10" value="300" />
+          </div>
+          <div class="input-group">
+            <label>S&amp;H Package (CAD)</label>
+            <input type="number" id="sshPackage" value="0" step="0.01" />
+            <input type="range" id="sshPackage-slider" min="0" max="5000" step="10" value="0" />
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section section-right">
+        <h2>Domestic/Onshore Supplier</h2>
+
+        <div class="totals-single">
+          <div class="total-card large">
+            <div class="label">Onshore Total (CAD)</div>
+            <div class="value" id="onshoreTotal">$0.00</div>
+          </div>
+        </div>
+
+        <div class="totals-grid-2">
+          <div class="total-card">
+            <div class="label">Product Cost (CAD) - Onshore</div>
+            <div class="value" id="productCostOnshore">$0.00</div>
+          </div>
+          <div class="total-card">
+            <div class="label">Freight Cost (CAD)</div>
+            <div class="value" id="freightOnshore">$0.00</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 40px;">
+          <div class="input-group">
+            <label>Product Cost (CAD → Local) / 100</label>
+            <input type="number" id="productCostCADLocal" value="32000" step="0.01" />
+            <input type="range" id="productCostCADLocal-slider" min="0" max="100000" step="100" value="32000" />
+          </div>
+
+          <div class="input-group">
+            <label>Freight Cost (CAD → Local) / pallet</label>
+            <input type="number" id="freightCostCADLocal" value="12488" step="0.01" />
+            <input type="range" id="freightCostCADLocal-slider" min="0" max="50000" step="100" value="12488" />
+          </div>
+
+          <div class="input-group">
+            <label>Lead Time Weeks (Local)</label>
+            <input type="number" id="leadTimeWeeksLocal" value="3" step="1" />
+            <input type="range" id="leadTimeWeeksLocal-slider" min="0" max="52" step="1" value="3" />
+          </div>
+        </div>
+
+        <div class="notes">
+          <p>*Note: Percentage inputs accept both formats (13 = 13%, 0.13 = 13%)</p>
+          <p>*Power BI match: Lead Time Weeks does not affect totals.</p>
+          <p>*Power BI match: % Cheaper with Onshore = SavingsCAD ÷ Offshore Total.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">Data updated 07/01/26</div>
+  </div>
+
+  <script>
+    function formatNumber(num) {
+      return Number(num).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+    function formatCurrency(num) {
+      return "$" + formatNumber(num);
+    }
+    function normalizeRate(x) {
+      x = Number(x) || 0;
+      return x > 1 ? x / 100 : x;
+    }
+
+    const inputs = {
+      productCostUSD: document.getElementById("productCostUSD"),
+      freightCostUSD: document.getElementById("freightCostUSD"),
+      shipments: document.getElementById("shipments"),
+      exchangeRate: document.getElementById("exchangeRate"),
+      investmentRate: document.getElementById("investmentRate"),
+      borrowRate: document.getElementById("borrowRate"),
+      leadTimeWeeks: document.getElementById("leadTimeWeeks"),
+      hoursPerWeek: document.getElementById("hoursPerWeek"),
+      warehouseRent: document.getElementById("warehouseRent"),
+      wagesPerHour: document.getElementById("wagesPerHour"),
+      eventsPerYear: document.getElementById("eventsPerYear"),
+      repackaging: document.getElementById("repackaging"),
+      handlingRate: document.getElementById("handlingRate"),
+      sshPackage: document.getElementById("sshPackage"),
+      productCostCADLocal: document.getElementById("productCostCADLocal"),
+      freightCostCADLocal: document.getElementById("freightCostCADLocal"),
+      leadTimeWeeksLocal: document.getElementById("leadTimeWeeksLocal")
+    };
+
+    Object.keys(inputs).forEach((key) => {
+      const input = inputs[key];
+      const slider = document.getElementById(key + "-slider");
+
+      if (input) {
+        input.addEventListener("input", () => {
+          if (slider) slider.value = input.value;
+          calculate();
+        });
+      }
+      if (slider) {
+        slider.addEventListener("input", () => {
+          if (input) input.value = slider.value;
+          calculate();
+        });
+      }
+    });
+
+    function calculate() {
+      const productCostUSD = Number(inputs.productCostUSD.value) || 0;
+      const freightCostUSD = Number(inputs.freightCostUSD.value) || 0;
+      const shipments = Number(inputs.shipments.value) || 0;
+      const exchangeRate = Number(inputs.exchangeRate.value) || 0;
+
+      const borrowRate = normalizeRate(inputs.borrowRate.value);
+      const investmentRate = normalizeRate(inputs.investmentRate.value);
+
+      // Lead times: display only
+      const leadTimeWeeks = Number(inputs.leadTimeWeeks.value) || 0;
+      const leadTimeWeeksLocal = Number(inputs.leadTimeWeeksLocal.value) || 0;
+
+      const hoursPerWeek = Number(inputs.hoursPerWeek.value) || 0;
+      const eventsPerYear = Number(inputs.eventsPerYear.value) || 0;
+
+      const warehouseWeeklyCAD = Number(inputs.warehouseRent.value) || 0;
+      const wagesCAD = Number(inputs.wagesPerHour.value) || 0;
+      const repackagingCAD = Number(inputs.repackaging.value) || 0;
+      const handlingRateCAD = Number(inputs.handlingRate.value) || 0;
+      const shPackageCAD = Number(inputs.sshPackage.value) || 0;
+
+      const productCostCADLocal = Number(inputs.productCostCADLocal.value) || 0;
+      const freightCostCADLocal = Number(inputs.freightCostCADLocal.value) || 0;
+
+      // Power BI: Off_Product CAD
+      const offProductCAD =
+        (productCostUSD * exchangeRate) +
+        (freightCostUSD * shipments * exchangeRate);
+
+      const freightCAD = freightCostUSD * shipments * exchangeRate;
+
+      // Storage & Handling
+      const storageHandling =
+        (warehouseWeeklyCAD || 0) +
+        (wagesCAD || 0) * (hoursPerWeek || 0) * (eventsPerYear || 0) +
+        (repackagingCAD || 0) +
+        (handlingRateCAD || 0) +
+        (shPackageCAD || 0);
+
+      // Interest
+      const rateUsed = borrowRate > 0 ? borrowRate : investmentRate;
+      const interest = rateUsed * offProductCAD;
+
+      // Totals
+      const offshoreSum = offProductCAD + storageHandling + interest;
+      const onshoreSum = productCostCADLocal + freightCostCADLocal;
+
+      // Output (Product Cost Offshore MUST show offProductCAD)
+      document.getElementById("productCostCAD").textContent = formatCurrency(offProductCAD);
+      document.getElementById("exchangeRateDisplay").textContent = formatNumber(exchangeRate);
+      document.getElementById("freightCAD").textContent = formatCurrency(freightCAD);
+      document.getElementById("storageHandling").textContent = formatCurrency(storageHandling);
+      document.getElementById("interest").textContent = formatNumber(interest);
+      document.getElementById("offshoreTotal").textContent = formatCurrency(offshoreSum);
+
+      document.getElementById("productCostOnshore").textContent = formatCurrency(productCostCADLocal);
+      document.getElementById("freightOnshore").textContent = formatCurrency(freightCostCADLocal);
+      document.getElementById("onshoreTotal").textContent = formatCurrency(onshoreSum);
+
+      // Savings
+      const savingsCAD = offshoreSum - onshoreSum;
+      const savingsAbs = Math.abs(savingsCAD);
+      document.getElementById("savings").textContent = formatCurrency(savingsAbs);
+
+      // % Cheaper with Onshore (Power BI): SavingsCAD / Offshore Total
+      const percentEl = document.getElementById("percentCheaper");
+      const winnerEl = document.getElementById("winner");
+
+      document.querySelectorAll(".summary-card").forEach((card) => {
+        card.classList.remove("green", "red");
+      });
+
+      if (Math.abs(savingsCAD) < 0.01) {
+        winnerEl.textContent = "Costs are the same";
+        percentEl.textContent = "(Blank)";
+      } else if (savingsCAD > 0) {
+        winnerEl.textContent = "Onshore is cheaper";
+        const pctCheaperOnshore = offshoreSum !== 0 ? (savingsCAD / offshoreSum) : 0;
+        percentEl.textContent = "Onshore " + (pctCheaperOnshore * 100).toFixed(2) + "%";
+        document.querySelectorAll(".summary-card").forEach((card) => card.classList.add("green"));
+      } else {
+        winnerEl.textContent = "Offshore is cheaper";
+        percentEl.textContent = "(Blank)";
+        document.querySelectorAll(".summary-card").forEach((card) => card.classList.add("red"));
+      }
+
+      // Lead-time advantage (display only)
+      const leadEl = document.getElementById("leadAdvantage");
+      if (leadTimeWeeks === leadTimeWeeksLocal) {
+        leadEl.textContent = "Same lead time";
+      } else if (leadTimeWeeks < leadTimeWeeksLocal) {
+        leadEl.textContent = "Offshore " + (leadTimeWeeksLocal - leadTimeWeeks) + " weeks faster";
+      } else {
+        leadEl.textContent = "Onshore " + (leadTimeWeeks - leadTimeWeeksLocal) + " weeks faster";
+      }
+    }
+
+    calculate();
+  </script>
+</body>
+</html>
